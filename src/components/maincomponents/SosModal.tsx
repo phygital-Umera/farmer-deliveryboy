@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useT } from '@/i18n/LanguageContext';
 
 interface SosModalProps {
   onClose: () => void;
 }
 
 export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
+  const t = useT();
   const [alertSent, setAlertSent] = useState(false);
 
   const handleSendAlert = () => {
@@ -26,10 +28,10 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
             </div>
             <div>
               <h3 className="font-extrabold text-base text-gray-900 leading-tight">
-                Mandi SOS Support
+                {t('sos.title')}
               </h3>
               <span className="text-[11px] text-gray-500 font-medium">
-                24x7 Dedicated Rider Emergency Desk
+                {t('sos.subtitle')}
               </span>
             </div>
           </div>
@@ -47,10 +49,9 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
             <span className="material-symbols-outlined text-4xl text-[#ba1a1a] animate-pulse">
               notifications_active
             </span>
-            <h4 className="font-bold text-red-900 text-sm">Emergency Alert Broadcasted</h4>
+            <h4 className="font-bold text-red-900 text-sm">{t('sos.sentTitle')}</h4>
             <p className="text-xs text-red-700 leading-relaxed">
-              Your live GPS coordinates have been sent to Mandi Hub Manager &amp; Field Emergency
-              Team. A support officer is connecting to you immediately.
+              {t('sos.sentMsg')}
             </p>
           </div>
         ) : (
@@ -62,7 +63,7 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
               className="w-full py-2.5 px-3 bg-[#ba1a1a] hover:bg-[#a01616] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
             >
               <span className="material-symbols-outlined text-[18px]">warning</span>
-              <span>Broadcast Immediate Emergency Alert</span>
+              <span>{t('sos.broadcast')}</span>
             </button>
 
             {/* Assistance Channels */}
@@ -76,11 +77,11 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
                     headset_mic
                   </span>
                   <div>
-                    <div className="font-bold text-gray-900">Mandi Rider Hotline</div>
-                    <div className="text-gray-500 text-[11px]">Toll-Free 1800-419-MANDI</div>
+                    <div className="font-bold text-gray-900">{t('sos.hotline')}</div>
+                    <div className="text-gray-500 text-[11px]">{t('sos.tollFree')}</div>
                   </div>
                 </div>
-                <span className="text-[#1b5e20] font-bold">Call Now</span>
+                <span className="text-[#1b5e20] font-bold">{t('sos.callNow')}</span>
               </a>
 
               <a
@@ -92,11 +93,11 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
                     storefront
                   </span>
                   <div>
-                    <div className="font-bold text-gray-900">Hub Manager (Amit Ji)</div>
-                    <div className="text-gray-500 text-[11px]">Sector 14 Mandi Hub Stall #4</div>
+                    <div className="font-bold text-gray-900">{t('sos.hubManager')}</div>
+                    <div className="text-gray-500 text-[11px]">{t('sos.hubAddress')}</div>
                   </div>
                 </div>
-                <span className="text-[#1b5e20] font-bold">Call Hub</span>
+                <span className="text-[#1b5e20] font-bold">{t('sos.callHub')}</span>
               </a>
 
               <a
@@ -108,11 +109,11 @@ export const SosModal: React.FC<SosModalProps> = ({ onClose }) => {
                     local_police
                   </span>
                   <div>
-                    <div className="font-bold text-gray-900">Police &amp; Ambulance</div>
-                    <div className="text-gray-500 text-[11px]">National Emergency Service 112</div>
+                    <div className="font-bold text-gray-900">{t('sos.police')}</div>
+                    <div className="text-gray-500 text-[11px]">{t('sos.national')}</div>
                   </div>
                 </div>
-                <span className="text-red-700 font-bold">Dial 112</span>
+                <span className="text-red-700 font-bold">{t('sos.dial')}</span>
               </a>
             </div>
           </>

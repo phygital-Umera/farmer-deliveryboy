@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { delivered, deliveryHistory, getDelivery, getDeliveryById, pickupItems } from "./deliveryOrdersApi"
 import toast from "react-hot-toast"
+import { translate } from "@/i18n/LanguageContext"
 
 export const useGetDelivery=()=>{
     return useQuery({
         queryKey:['delivery'],
-        queryFn:getDelivery
+        queryFn:getDelivery,
+        // Poll so new assigned orders show up (and ring the alarm) without a refresh
+        refetchInterval:20000,
+        refetchIntervalInBackground:true,
     })
 }
 
@@ -22,7 +26,7 @@ export const usePickupItems=()=>{
     return useMutation({
         mutationFn:(id:string)=>pickupItems(id),
         onSuccess:(_data, variables)=>{
-            toast.success("Items Picked Up")
+            toast.success(translate('toast.pickedUp'))
             const id = typeof variables === 'string' ? variables : variables.id;
             queryClient.invalidateQueries({ queryKey: ['delivery'] });
             if (id) {
@@ -30,7 +34,7 @@ export const usePickupItems=()=>{
             }
         },
         onError:()=>{
-            toast.error("Failed to pick up items")
+            toast.error(translate('toast.pickupFailed'))
         }
     })
 }
@@ -39,12 +43,12 @@ export const useDeliverd=()=>{
     return useMutation({
         mutationFn:(id:string)=>delivered(id),
         onSuccess:()=>{
-            toast.success("Items Delivered")
+            toast.success(translate('toast.delivered'))
          
         
         },
         onError:()=>{
-            toast.error("Failed to deliver items")
+            toast.error(translate('toast.deliverFailed'))
         }
     })
 }

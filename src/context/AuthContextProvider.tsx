@@ -3,6 +3,7 @@ import { AuthContext } from './AuthContext';
 import { Token, User } from '@/types';
 import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
 import { jwtDecode } from 'jwt-decode';
+import { unregisterDeviceToken } from '@/lib/pushNotifications/orderAlarmPush';
 
 const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -86,6 +87,8 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
    * Clears all auth state and removes from localStorage.
    */
   const logout = () => {
+    // Stop new-order alarm pushes to this phone (needs the token, so run first)
+    unregisterDeviceToken();
     setToken(null);
     setUser(null);
     setRole(null);

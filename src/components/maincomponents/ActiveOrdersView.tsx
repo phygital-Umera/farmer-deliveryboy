@@ -4,6 +4,7 @@ import { useGetDelivery } from '@/lib/api and mutation/deliveryOrders/useDeliver
 import { useNavigate } from '@tanstack/react-router';
 import { OrderCard } from './OrderCard';
 import { ShiftSummaryCard } from './ShiftSummaryCard';
+import { useT } from '@/i18n/LanguageContext';
 
 interface ActiveOrdersViewProps {
   orders: Order[];
@@ -21,6 +22,7 @@ export const ActiveOrdersView: React.FC<ActiveOrdersViewProps> = ({
   const [filterQuery, setFilterQuery] = useState('');
   const { data: deliveyData, isLoading, refetch } = useGetDelivery();
   const navigate = useNavigate();
+  const t = useT();
 
   // Extract raw orders from API response safely
   const rawApiOrders: any[] = Array.isArray(deliveyData?.data)
@@ -144,7 +146,7 @@ export const ActiveOrdersView: React.FC<ActiveOrdersViewProps> = ({
         <span className="material-symbols-outlined text-[17px] text-[#1b6d24]">
           bolt
         </span>
-        <span>PRIORITY DELIVERIES</span>
+        <span>{t('orders.priority')}</span>
       </div>
 
       {/* Orders List */}
@@ -161,17 +163,17 @@ export const ActiveOrdersView: React.FC<ActiveOrdersViewProps> = ({
               <span className="material-symbols-outlined text-3xl">done_all</span>
             </div>
             <h3 className="font-bold text-gray-800 text-base mb-1">
-              No assigned orders right now!
+              {t('orders.emptyTitle')}
             </h3>
             <p className="text-xs text-gray-500 mb-4">
-              All assigned orders completed or no new batches assigned to you.
+              {t('orders.emptyText')}
             </p>
             <button
               type="button"
               onClick={handleRefreshClick}
               className="px-3 py-1.5 bg-[#1b5e20] text-white rounded-lg text-xs font-bold hover:bg-[#144818] active:scale-95"
             >
-              Refresh Orders
+              {t('orders.refresh')}
             </button>
           </div>
         ) : (

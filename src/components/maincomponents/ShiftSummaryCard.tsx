@@ -1,4 +1,5 @@
 import React from 'react';
+import { useT } from '@/i18n/LanguageContext';
 
 interface ShiftSummaryCardProps {
   ordersCount: number;
@@ -15,6 +16,7 @@ export const ShiftSummaryCard: React.FC<ShiftSummaryCardProps> = ({
   onViewRoute,
   className = '',
 }) => {
+  const t = useT();
   return (
     <div className={`px-4 pt-2 pb-1 ${className}`}>
       <div 
@@ -27,7 +29,7 @@ export const ShiftSummaryCard: React.FC<ShiftSummaryCardProps> = ({
           </div>
           <div className="flex flex-col min-w-0">
             <span className="font-headline font-bold text-[16px] text-[#217128] truncate tracking-tight">
-              {ordersCount} {ordersCount === 1 ? 'Order' : 'Orders'} Assigned
+              {t(ordersCount === 1 ? 'summary.assignedOne' : 'summary.assignedMany', { n: ordersCount })}
             </span>
          
           </div>
@@ -38,7 +40,7 @@ export const ShiftSummaryCard: React.FC<ShiftSummaryCardProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-[#1b6d24] animate-ping" />
           )}
           <span className="font-label text-[10px] font-bold uppercase tracking-wide">
-            {isLive ? 'Live Shift' : 'Paused'}
+            {isLive ? t('summary.live') : t('summary.paused')}
           </span>
         </div>
       </div>

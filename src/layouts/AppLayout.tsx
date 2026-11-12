@@ -5,13 +5,18 @@ import { BottomNav } from '@/components/maincomponents/BottomNav';
 import { DeliveryTabProvider, useDeliveryTab } from '@/context/DeliveryTabContext';
 import { ActiveTab } from '@/types';
 import { useGetDelivery } from '@/lib/api and mutation/deliveryOrders/useDelivery';
+import { useOrderAlarmPush } from '@/hooks/useOrderAlarmPush';
+import { useNewOrderAlarm } from '@/hooks/useNewOrderAlarm';
+import { NewOrderAlarmBanner } from '@/components/maincomponents/NewOrderAlarmBanner';
 
 const AppLayoutContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, user } = useAuthContext();
   const { activeTab, setActiveTab, activeOrdersCount } = useDeliveryTab();
   const { data: deliveryOrdersData } = useGetDelivery();
+  useOrderAlarmPush(isAuthenticated);
+  const newOrderAlarm = useNewOrderAlarm(isAuthenticated, user?.id ? String(user.id) : undefined);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -56,6 +61,15 @@ const AppLayoutContent = () => {
       <main className={`flex-1 w-full ${!isAuthPage ? 'pb-16' : ''}`}>
         <Outlet />
       </main>
+
+      {/* New-order alarm (web + app fallback) */}
+      {isAuthenticated && (
+        <NewOrderAlarmBanner
+          count={newOrderAlarm.newOrderIds.length}
+          onView={newOrderAlarm.viewOrder}
+          onStop={newOrderAlarm.dismiss}
+        />
+      )}
 
       {/* Sticky Bottom Navigation Bar */}
       {!isAuthPage && (

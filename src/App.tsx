@@ -10,6 +10,8 @@ import { routeTree } from './routeTree.gen';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { AuthContextType } from './types';
 import { useEffect } from 'react';
+import SplashScreen from './components/SplashScreen';
+import { LanguageProvider } from './i18n/LanguageContext';
 
 // Create a single router instance outside the component.
 // The context here is just a placeholder — the real auth values are injected
@@ -53,16 +55,19 @@ const RouterWithAuth = () => {
 
 const App = () => {
   return (
-    <AuthContextProvider>
-      <WebSocketProvider>
-        <div>
-          <Toaster />
-        </div>
-        <QueryProvider>
-          <RouterWithAuth />
-        </QueryProvider>
-      </WebSocketProvider>
-    </AuthContextProvider>
+    <LanguageProvider>
+      <AuthContextProvider>
+        <WebSocketProvider>
+          <SplashScreen />
+          <div>
+            <Toaster />
+          </div>
+          <QueryProvider>
+            <RouterWithAuth />
+          </QueryProvider>
+        </WebSocketProvider>
+      </AuthContextProvider>
+    </LanguageProvider>
   );
 };
 

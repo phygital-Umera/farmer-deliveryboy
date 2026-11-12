@@ -4,6 +4,8 @@ import { useAuthContext } from '@/context/AuthContext';
 import { useNavigate } from '@tanstack/react-router';
 import ClickOutside from '@/components/ClickOutside';
 import toast from 'react-hot-toast';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { LANGUAGES } from '@/i18n/translations';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -25,16 +27,18 @@ export const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
 
   const { user, logout } = useAuthContext();
+  const { t, language, openLanguagePicker } = useLanguage();
+  const currentLanguageLabel = LANGUAGES.find((l) => l.code === language)?.label;
   const getSubTitle = () => {
     switch (activeTab) {
       case 'active':
-        return 'Active Orders';
+        return t('header.activeOrders');
       case 'task':
-        return 'Order Task Navigation';
+        return t('header.taskNav');
       case 'history':
-        return 'Delivery History';
+        return t('header.history');
       default:
-        return 'Active Orders';
+        return t('header.activeOrders');
     }
   };
 
@@ -75,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`w-1.5 h-1.5 rounded-full ${shiftStats.isOnDuty ? 'bg-[#1b6d24] animate-pulse' : 'bg-gray-400'
                   }`}
               />
-              <span>{shiftStats.isOnDuty ? 'ON DUTY' : 'OFF DUTY'}</span>
+              <span>{shiftStats.isOnDuty ? t('header.onDuty') : t('header.offDuty')}</span>
             </button>
 
             {/* Emergency SOS Support Button */}
@@ -110,13 +114,33 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Small Collapsible Popup */}
               {showProfilePopup && (
-                <div className="absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-xl border border-[#e5e2e1] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-[#e5e2e1] p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-2.5 pt-1 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-[#717a6d]">
+                    {t('settings.title')}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfilePopup(false);
+                      openLanguagePicker('settings');
+                    }}
+                    className="w-full flex items-center justify-between gap-1.5 px-2.5 py-2 text-xs font-bold text-[#1b1c1c] hover:bg-[#f1f8f1] rounded-lg transition-colors active:scale-95 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[18px] text-[#1b6d24]">
+                        translate
+                      </span>
+                      <span>{t('lang.menu')}</span>
+                    </span>
+                    <span className="text-[11px] font-semibold text-[#1b6d24]">{currentLanguageLabel}</span>
+                  </button>
+                  <div className="my-1 border-t border-[#eeeae9]" />
                   <button
                     type="button"
                     onClick={() => {
                       setShowProfilePopup(false);
                       logout();
-                      toast.success('Logged out successfully');
+                      toast.success(t('header.loggedOut'));
                       navigate({ to: '/' } as any);
                     }}
                     className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-[#ba1a1a] hover:bg-[#ffdad6]/50 rounded-lg transition-colors active:scale-95 cursor-pointer"
@@ -124,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="material-symbols-outlined text-[18px]">
                       logout
                     </span>
-                    <span>Logout</span>
+                    <span>{t('header.logout')}</span>
                   </button>
                 </div>
               )}
@@ -146,12 +170,12 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <h3 className="font-bold text-lg text-gray-900 mb-1">
-              {shiftStats.isOnDuty ? 'Go Off Duty?' : 'Start Shift & Go On Duty?'}
+              {shiftStats.isOnDuty ? t('header.goOffDutyQ') : t('header.goOnDutyQ')}
             </h3>
             <p className="text-xs text-gray-600 mb-5 leading-relaxed">
               {shiftStats.isOnDuty
-                ? 'You have 3 active delivery orders in progress. Going off duty will halt automatic assignment.'
-                : 'You will immediately receive live Mandi vegetable deliveries for Sector 14 hub.'}
+                ? t('header.offDutyMsg')
+                : t('header.onDutyMsg')}
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -159,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setShowDutyConfirm(false)}
                 className="py-2.5 px-3 rounded-xl border border-gray-200 text-gray-700 font-semibold text-xs hover:bg-gray-50 active:scale-95"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -172,7 +196,7 @@ export const Header: React.FC<HeaderProps> = ({
                     : 'bg-[#1b5e20] hover:bg-[#144818]'
                   }`}
               >
-                {shiftStats.isOnDuty ? 'Confirm Off Duty' : 'Go On Duty'}
+                {shiftStats.isOnDuty ? t('header.confirmOffDuty') : t('header.goOnDuty')}
               </button>
             </div>
           </div>

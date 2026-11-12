@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Order, ShiftStats } from '../../../types';
 import { useDeliveryhistory } from '@/lib/api and mutation/deliveryOrders/useDelivery';
+import { useT } from '@/i18n/LanguageContext';
 
 interface DeliveryHistoryViewProps {
   historyOrders?: Order[];
@@ -10,7 +11,7 @@ interface DeliveryHistoryViewProps {
 }
 
 const formatCompletedTime = (dateStr?: string | null) => {
-  if (!dateStr) return 'Just now';
+  if (!dateStr) return '';
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
@@ -49,6 +50,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
   onSelectOrderDetails,
   onSelectOrder = onSelectOrderDetails || (() => {}),
 }) => {
+  const t = useT();
   const [filter, setFilter] = useState<'all' | 'today' | 'yesterday'>('all');
   const [showReconciliationModal, setShowReconciliationModal] = useState(false);
   const [reconciliationSubmitted, setReconciliationSubmitted] = useState(false);
@@ -176,12 +178,12 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                 trending_up
               </span>
               <h2 className="text-[17px] font-extrabold text-[#1b1c1c] tracking-tight">
-                Shift Performance
+                {t('history.performance')}
               </h2>
             </div>
             <div className="text-right">
               <span className="text-[12px] text-[#525e54] mr-1">
-                {filter === 'yesterday' ? "Yesterday's Earnings:" : "Today's Earnings:"}
+                {filter === 'yesterday' ? t('history.yesterdayEarnings') : t('history.todayEarnings')}
               </span>
               <span className="text-[22px] font-black text-[#1b6d24]">
                 ₹{displayedEarnings}
@@ -198,7 +200,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   local_shipping
                 </span>
                 <span className="text-[11px] font-bold text-[#41493e] truncate">
-                  Deliveries
+                  {t('history.deliveries')}
                 </span>
               </div>
               <div className="text-right leading-none shrink-0 pl-1">
@@ -206,7 +208,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   {deliveriesCount}
                 </span>
                 <span className="text-[10px] font-medium text-[#525e54] block mt-0.5">
-                  Orders
+                  {t('history.orders')}
                 </span>
               </div>
             </div>
@@ -218,7 +220,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   payments
                 </span>
                 <span className="text-[11px] font-bold text-[#41493e] shrink-0">
-                  COD
+                  {t('history.cod')}
                 </span>
               </div>
               <div className="text-right leading-none shrink-0 pl-1">
@@ -238,9 +240,9 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
             >
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="material-symbols-outlined text-[16px] shrink-0">account_balance_wallet</span>
-                <span className="truncate">Hub Handover</span>
+                <span className="truncate">{t('history.hubHandover')}</span>
               </div>
-              <span className="underline shrink-0 text-[11px]">Reconcile ₹{codCashInHand.toLocaleString()}</span>
+              <span className="underline shrink-0 text-[11px]">{t('history.reconcile', { amount: codCashInHand.toLocaleString() })}</span>
             </button>
           </div>
         </div>
@@ -258,7 +260,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   : 'bg-white text-[#525e54] border border-[#e0e6e0] hover:bg-gray-50'
               }`}
             >
-              {tab === 'all' ? 'All Deliveries' : tab}
+              {tab === 'all' ? t('history.filterAll') : tab === 'today' ? t('history.filterToday') : t('history.filterYesterday')}
             </button>
           ))}
         </div>
@@ -267,7 +269,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
         {isLoading && !rawOrdersList.length && (
           <div className="py-8 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
             <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-            Loading delivery history...
+            {t('history.loading')}
           </div>
         )}
 
@@ -277,7 +279,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
             <span className="material-symbols-outlined text-[32px] text-gray-400 mb-1">
               receipt_long
             </span>
-            <p className="font-headline font-bold text-xs text-[#1b1c1c]">No delivered orders found</p>
+            <p className="font-headline font-bold text-xs text-[#1b1c1c]">{t('history.empty')}</p>
           </div>
         )}
 
@@ -297,7 +299,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   </span> */}
                   <span className="bg-[#e8f5e9] text-[#1b5e20] px-2 py-0.5 rounded-full font-label text-[10px] font-bold flex items-center gap-0.5">
                     <span className="material-symbols-outlined text-[12px]">check</span>
-                    Delivered
+                    {t('history.delivered')}
                   </span>
                 </div>
                 <div className="font-headline font-bold text-[14px] text-[#1b5e20]">
@@ -317,7 +319,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                 </div>
                 <div className="text-right shrink-0">
                   <div className="font-label text-[10px] text-[#717a6d]">
-                    {order.completedAt || order.placedTime}
+                    {order.completedAt || order.placedTime || t('history.justNow')}
                   </div>
                   {/* {order.paymentType === 'COD' && (
                     <div className="font-label text-[10px] font-bold text-[#ba1a1a]">
@@ -330,7 +332,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
               {/* Bottom Row: Produce Items & Rating */}
               <div className="flex items-center justify-between border-t border-[#e0e6e0]/60 pt-1.5 font-label text-[12px] text-[#717a6d]">
                 <span>{order.itemsSummary}</span>
-                  <span className='text-[#1b5e20]'>on Time</span>
+                  <span className='text-[#1b5e20]'>{t('history.onTime')}</span>
               </div>
             </div>
           ))}
@@ -347,7 +349,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   account_balance
                 </span>
                 <h3 className="font-bold text-gray-900 text-base">
-                  Hub Cash Reconciliation
+                  {t('history.reconTitle')}
                 </h3>
               </div>
               <button
@@ -368,11 +370,10 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   <span className="material-symbols-outlined text-3xl">verified</span>
                 </div>
                 <h4 className="font-bold text-gray-900 text-base">
-                  Cash Handover Token Generated!
+                  {t('history.tokenGenerated')}
                 </h4>
                 <p className="text-xs text-gray-600">
-                  Token <strong>#MND-8841</strong> sent to Hub Cashier Stall #4. Present this token
-                  to deposit <strong>₹{codCashInHand.toLocaleString()}</strong> cash.
+                  {t('history.tokenMsg', { amount: codCashInHand.toLocaleString() })}
                 </p>
                 <button
                   type="button"
@@ -382,24 +383,24 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   }}
                   className="w-full mt-2 py-2 bg-[#1b5e20] hover:bg-[#144818] text-white rounded-lg text-xs font-bold"
                 >
-                  Done
+                  {t('common.done')}
                 </button>
               </div>
             ) : (
               <>
                 <div className="bg-[#f6f3f2] rounded-xl p-3 space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Mandi Hub:</span>
+                    <span className="text-gray-500">{t('history.mandiHub')}</span>
                     <span className="font-bold text-gray-800">{shiftStats?.hubName || 'Main Hub'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Rider Name / ID:</span>
+                    <span className="text-gray-500">{t('history.riderName')}</span>
                     <span className="font-bold text-gray-800">
                       {shiftStats?.riderName || 'Delivery Partner'} ({shiftStats?.riderId || 'DLV-01'})
                     </span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-2 font-bold text-sm">
-                    <span>Total Cash to Deposit:</span>
+                    <span>{t('history.totalDeposit')}</span>
                     <span className="text-[#1b6d24] text-base">
                       ₹{codCashInHand.toLocaleString()}
                     </span>
@@ -407,8 +408,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                 </div>
 
                 <p className="text-[11px] text-gray-500 leading-relaxed">
-                  Verify the physical cash notes in your Mandi money pouch before initiating
-                  deposit.
+                  {t('history.verifyCash')}
                 </p>
 
                 <button
@@ -416,7 +416,7 @@ export const DeliveryHistoryView: React.FC<DeliveryHistoryViewProps> = ({
                   onClick={() => setReconciliationSubmitted(true)}
                   className="w-full py-2 bg-[#1b5e20] hover:bg-[#144818] text-white font-bold rounded-lg text-xs shadow-sm active:scale-95"
                 >
-                  Generate Cash Handover Token
+                  {t('history.generateToken')}
                 </button>
               </>
             )}

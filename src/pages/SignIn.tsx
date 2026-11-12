@@ -10,6 +10,7 @@ import {LuEyeOff} from 'react-icons/lu';
 import {Sprout} from 'lucide-react';
 import {z} from 'zod';
 import toast from 'react-hot-toast';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 
 type SignInFormValues = z.infer<typeof signInSchema>;
@@ -31,6 +32,7 @@ const SignIn: React.FC = () => {
   });
 
   const {login, isAuthenticated} = useAuthContext();
+  const {t, openLanguagePicker} = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -47,7 +49,7 @@ const SignIn: React.FC = () => {
   //   }
   // }, [isAuthenticated, navigate]);
   const onSubmit = async (values: SignInFormValues) => {
-    const toastId = toast.loading('Logging in...');
+    const toastId = toast.loading(t('signin.loggingIn'));
     try {
         const payload={
           ...values,
@@ -64,12 +66,14 @@ const SignIn: React.FC = () => {
         login(accessToken, userData, refreshToken);
       }
 
-      toast.success('Login successful!', { id: toastId });
+      toast.success(t('signin.success'), { id: toastId });
       navigate({ to: '/homepage' });
+      // Ask the rider to choose a language after every new login
+      openLanguagePicker('onboarding');
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(
-        error?.response?.data?.message || 'Login failed. Please try again.',
+        error?.response?.data?.message || t('signin.failed'),
         { id: toastId }
       );
     }
@@ -96,7 +100,7 @@ const SignIn: React.FC = () => {
               Apna Sabzi Mandi
             </h2>
             <p className="mt-1 text-xs sm:text-sm font-medium text-[#525e54]">
-              Sign in to manage your orders &amp; fresh mandi savings
+              {t('signin.subtitle')}
             </p>
           </div>
 
@@ -107,12 +111,12 @@ const SignIn: React.FC = () => {
               <div className="space-y-1.5">
                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#1b1c1c]">
                   <FiUser className="text-[#1b5e20]" />
-                  User ID / Phone Number
+                  {t('signin.userId')}
                 </label>
                 <div className="group/input relative">
                   <input
                     type="text"
-                    placeholder="Enter your User ID or Mobile"
+                    placeholder={t('signin.userIdPh')}
                     {...register('username')}
                     className={`w-full rounded-xl border bg-[#fcf9f8] px-4 py-3 text-sm text-[#1b1c1c] placeholder:text-[#717a6d] outline-none transition-all duration-200 ${
                       errors.username
@@ -137,12 +141,12 @@ const SignIn: React.FC = () => {
               <div className="space-y-1.5">
                 <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#1b1c1c]">
                   <FiLock className="text-[#1b5e20]" />
-                  Password
+                  {t('signin.password')}
                 </label>
                 <div className="group/input relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    placeholder={t('signin.passwordPh')}
                     {...register('password')}
                     className={`w-full rounded-xl border bg-[#fcf9f8] px-4 py-3 text-sm text-[#1b1c1c] placeholder:text-[#717a6d] outline-none transition-all duration-200 ${
                       errors.password
@@ -177,7 +181,7 @@ const SignIn: React.FC = () => {
                   className="w-full transform rounded-xl bg-[#00450d] px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:bg-[#1b5e20] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                 >
                   <span>
-                    {isSubmitting ? 'Signing in...' : 'Sign in to Apna Mandi'}
+                    {isSubmitting ? t('signin.signingIn') : t('signin.submit')}
                   </span>
                 </button>
               </div>

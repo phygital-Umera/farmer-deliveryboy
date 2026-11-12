@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActiveTab } from '../../../types';
+import { useT } from '@/i18n/LanguageContext';
 
 interface BottomNavProps {
   activeTab: ActiveTab;
@@ -12,6 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onTabChange,
   activeOrdersCount = 0,
 }) => {
+  const t = useT();
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#fcf9f8]/95 backdrop-blur-xl border-t border-[#e5e2e1] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] pb-safe">
       <div className="max-w-md mx-auto flex justify-around items-center h-14 px-2">
@@ -35,7 +37,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               </span>
             )}
           </div>
-          <span className="text-[11px] tracking-tight">Active</span>
+          <span className="text-[11px] tracking-tight">{t('nav.active')}</span>
         </button>
 
         {/* History Tab */}
@@ -51,7 +53,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="material-symbols-outlined text-[21px]">
             history
           </span>
-          <span className="text-[11px] tracking-tight">History</span>
+          <span className="text-[11px] tracking-tight">{t('nav.history')}</span>
         </button>
       </div>
     </nav>

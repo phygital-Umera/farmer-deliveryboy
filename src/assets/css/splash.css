@@ -1,0 +1,176 @@
+/* App-start splash: scooter rides in, "engine running", rides off. */
+
+.splash-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #ffffff;
+  transition: opacity 0.35s ease;
+}
+.splash-root.is-hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-stage {
+  position: relative;
+  width: min(92vw, 560px);
+  aspect-ratio: 16 / 9;
+}
+
+/* Moves the whole scooter: in → idle → out */
+.splash-rider {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120vw);
+}
+.splash-root[data-phase='enter'] .splash-rider,
+.splash-root[data-phase='idle'] .splash-rider {
+  animation: splash-enter 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+.splash-root[data-phase='exit'] .splash-rider {
+  transform: translateX(0);
+  animation: splash-exit 0.6s cubic-bezier(0.6, 0, 0.9, 0.5) forwards;
+}
+
+/* Engine vibration / bumpy road */
+.splash-bob {
+  position: absolute;
+  inset: 0;
+  animation: splash-bob 0.16s ease-in-out infinite alternate;
+  transform-origin: 50% 90%;
+}
+.splash-bob img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Exhaust smoke, positioned at the scooter's silencer in the image */
+.splash-smoke {
+  position: absolute;
+  left: 25%;
+  top: 83%;
+  width: 0;
+  height: 0;
+}
+.splash-smoke span {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.55);
+  opacity: 0;
+  animation: splash-puff 0.9s ease-out infinite;
+}
+.splash-smoke span:nth-child(2) { animation-delay: 0.3s; }
+.splash-smoke span:nth-child(3) { animation-delay: 0.6s; }
+
+/* Speed lines behind the delivery box */
+.splash-speed {
+  position: absolute;
+  left: 8%;
+  top: 38%;
+  width: 16%;
+  height: 30%;
+}
+.splash-speed i {
+  position: absolute;
+  right: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: #1b6d24;
+  opacity: 0;
+  animation: splash-speed 0.5s linear infinite;
+}
+.splash-speed i:nth-child(1) { top: 10%; width: 70%; }
+.splash-speed i:nth-child(2) { top: 45%; width: 100%; animation-delay: 0.17s; }
+.splash-speed i:nth-child(3) { top: 80%; width: 55%; animation-delay: 0.34s; }
+
+/* Road with moving dashes */
+.splash-road {
+  position: relative;
+  width: min(100vw, 640px);
+  height: 6px;
+  margin-top: -4%;
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    #9ca3af 0 28px,
+    transparent 28px 52px
+  );
+  background-size: 52px 100%;
+  animation: splash-road 0.35s linear infinite;
+  opacity: 0.7;
+}
+
+.splash-title {
+  margin-top: 28px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1b6d24;
+}
+.splash-subtitle {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+.splash-dots::after {
+  content: '';
+  animation: splash-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes splash-enter {
+  from { transform: translateX(-120vw); }
+  to   { transform: translateX(0); }
+}
+@keyframes splash-exit {
+  from { transform: translateX(0); }
+  to   { transform: translateX(130vw); }
+}
+@keyframes splash-bob {
+  from { transform: translateY(0) rotate(0deg); }
+  to   { transform: translateY(-3px) rotate(-0.6deg); }
+}
+@keyframes splash-puff {
+  0%   { transform: translate(0, 0) scale(0.4); opacity: 0.8; }
+  100% { transform: translate(-60px, -18px) scale(2.2); opacity: 0; }
+}
+@keyframes splash-speed {
+  0%   { transform: translateX(20px) scaleX(0.3); opacity: 0; }
+  30%  { opacity: 0.6; }
+  100% { transform: translateX(-40px) scaleX(1); opacity: 0; }
+}
+@keyframes splash-road {
+  from { background-position: 0 0; }
+  to   { background-position: -52px 0; }
+}
+@keyframes splash-dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-rider,
+  .splash-root[data-phase] .splash-rider {
+    animation: none !important;
+    transform: none !important;
+  }
+  .splash-bob,
+  .splash-smoke span,
+  .splash-speed i,
+  .splash-road,
+  .splash-dots::after {
+    animation: none !important;
+  }
+}

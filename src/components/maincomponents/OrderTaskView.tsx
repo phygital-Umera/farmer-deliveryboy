@@ -2,9 +2,20 @@ import React, { useState } from 'react';
 import { useDeliverd, useGetDeliveryById, usePickupItems } from '@/lib/api and mutation/deliveryOrders/useDelivery';
 import { useParams, useNavigate } from '@tanstack/react-router';
 import { useDeliveryTab } from '@/context/DeliveryTabContext';
+import { useT } from '@/i18n/LanguageContext';
+import { TranslationKey } from '@/i18n/translations';
+
+const ISSUE_REASONS: TranslationKey[] = [
+  'issue.doorLocked',
+  'issue.refused',
+  'issue.wrongAddress',
+  'issue.quality',
+  'issue.reschedule',
+];
 
 export const OrderTaskView: React.FC<any> = () => {
   const navigate = useNavigate();
+  const t = useT();
   const params = useParams({ strict: false });
   const id = (params as any)?.id;
   const { setActiveTab } = useDeliveryTab();
@@ -22,7 +33,7 @@ export const OrderTaskView: React.FC<any> = () => {
   // States
   const [showQr, setShowQr] = useState(false);
   const [showIssueModal, setShowIssueModal] = useState(false);
-  const [selectedIssueReason, setSelectedIssueReason] = useState('Door locked / No response');
+  const [selectedIssueReason, setSelectedIssueReason] = useState<TranslationKey>('issue.doorLocked');
   const [verifiedItemIds, setVerifiedItemIds] = useState<Record<string, boolean>>({});
   const [isDelivering, setIsDelivering] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -36,16 +47,16 @@ export const OrderTaskView: React.FC<any> = () => {
         <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
           <span className="material-symbols-outlined text-3xl">error_outline</span>
         </div>
-        <h3 className="font-bold text-gray-900 text-lg mb-1">Order Not Found</h3>
+        <h3 className="font-bold text-gray-900 text-lg mb-1">{t('task.notFound')}</h3>
         <p className="text-xs text-gray-500 mb-5">
-          No order ID was provided.
+          {t('task.noId')}
         </p>
         <button
           type="button"
           onClick={handleGoBack}
           className="px-4 py-2.5 bg-[#1b5e20] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#144818] active:scale-95"
         >
-          Back to Active Orders
+          {t('task.backToOrders')}
         </button>
       </div>
     );
@@ -60,7 +71,7 @@ export const OrderTaskView: React.FC<any> = () => {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center gap-3 p-6 text-center">
         <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#1b5e20] border-t-transparent" />
-        <span className="text-sm font-semibold text-[#525e54]">Loading order details...</span>
+        <span className="text-sm font-semibold text-[#525e54]">{t('task.loading')}</span>
       </div>
     );
   }
@@ -72,16 +83,16 @@ export const OrderTaskView: React.FC<any> = () => {
         <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
           <span className="material-symbols-outlined text-3xl">error_outline</span>
         </div>
-        <h3 className="font-bold text-gray-900 text-lg mb-1">Order Not Found</h3>
+        <h3 className="font-bold text-gray-900 text-lg mb-1">{t('task.notFound')}</h3>
         <p className="text-xs text-gray-500 mb-5">
-          Unable to fetch order details for ID: {id || 'unknown'}
+          {t('task.fetchFail', { id: id || 'unknown' })}
         </p>
         <button
           type="button"
           onClick={handleGoBack}
           className="px-4 py-2.5 bg-[#1b5e20] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#144818] active:scale-95"
         >
-          Back to Active Orders
+          {t('task.backToOrders')}
         </button>
       </div>
     );
@@ -130,8 +141,8 @@ export const OrderTaskView: React.FC<any> = () => {
     setIsDelivering(true);
     setToastMessage(
       viaUpi
-        ? `Delivered! Customer paid ₹${grandTotal} via UPI.`
-        : `Delivered! Collected ₹${grandTotal} in cash.`
+        ? t('task.deliveredUpi', { amount: grandTotal })
+        : t('task.deliveredCash', { amount: grandTotal })
     );
     setShowToast(true);
 
@@ -170,11 +181,11 @@ export const OrderTaskView: React.FC<any> = () => {
           className="flex items-center gap-1 text-xs font-bold text-[#1b5e20] hover:text-[#144818] active:scale-95 transition-all"
         >
           <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-          <span>Back</span>
+          <span>{t('task.back')}</span>
         </button>
 
         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#e8f5e9] text-[#1b5e20] border border-[#a0f399]">
-          {status}
+          {t(`status.${String(status).toUpperCase()}`, undefined, status)}
         </span>
       </div>
 
@@ -222,7 +233,7 @@ export const OrderTaskView: React.FC<any> = () => {
                   {copiedPhone ? 'check' : 'content_copy'}
                 </span>
                 {copiedPhone && (
-                  <span className="text-[10px] text-green-700 font-bold ml-0.5">Copied</span>
+                  <span className="text-[10px] text-green-700 font-bold ml-0.5">{t('task.copied')}</span>
                 )}
               </button>
             )}
@@ -255,7 +266,7 @@ export const OrderTaskView: React.FC<any> = () => {
                 className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-[#e8f5e9] text-[#1b5e20] hover:bg-[#d8eed9] rounded-xl font-bold text-[13px] active:scale-95 transition-all"
               >
                 <span className="material-symbols-outlined text-[18px]">call</span>
-                <span>Call Customer</span>
+                <span>{t('task.callCustomer')}</span>
               </a>
 
               <a
@@ -263,7 +274,7 @@ export const OrderTaskView: React.FC<any> = () => {
                 className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-[#f2f4f2] text-[#1b1c1c] hover:bg-[#e4e7e4] rounded-xl font-bold text-[13px] active:scale-95 transition-all"
               >
                 <span className="material-symbols-outlined text-[18px]">sms</span>
-                <span>Quick SMS</span>
+                <span>{t('task.sms')}</span>
               </a>
             </div>
           )}
@@ -278,12 +289,12 @@ export const OrderTaskView: React.FC<any> = () => {
                   inventory_2
                 </span>
                 <h2 className="text-[14px] text-[#1b1c1c] font-bold">
-                  Produce & Bag Checklist
+                  {t('task.checklist')}
                 </h2>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] text-[#1b6d24] font-semibold bg-[#e8f5e9] px-2.5 py-0.5 rounded-full">
-                  {Object.values(verifiedItemIds).filter(Boolean).length}/{items.length} Checked
+                  {t('task.checked', { done: Object.values(verifiedItemIds).filter(Boolean).length, total: items.length })}
                 </span>
               </div>
             </div>
@@ -336,7 +347,7 @@ export const OrderTaskView: React.FC<any> = () => {
               className="w-full mt-3 py-2.5 px-4 bg-[#1b5e20] hover:bg-[#144818] active:scale-[0.99] text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
-              <span>Pick Up ({Object.values(verifiedItemIds).filter(Boolean).length}/{items.length})</span>
+              <span>{t('task.pickUp', { done: Object.values(verifiedItemIds).filter(Boolean).length, total: items.length })}</span>
             </button>
           </div>
         )}
@@ -350,16 +361,16 @@ export const OrderTaskView: React.FC<any> = () => {
               </div>
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#1b5e20]">
-                  Cash on Delivery
+                  {t('task.cod')}
                 </div>
                 <div className="text-[11px] font-semibold text-[#525e54]">
-                  Collect from Customer
+                  {t('task.collectFromCustomer')}
                 </div>
               </div>
             </div>
 
             <div className="text-right">
-              <div className="text-[10px] font-bold uppercase text-[#525e54]">Grand Total</div>
+              <div className="text-[10px] font-bold uppercase text-[#525e54]">{t('task.grandTotal')}</div>
               <div className="font-black text-[24px] text-[#1b5e20] leading-none">
                 ₹{grandTotal}
               </div>
@@ -382,14 +393,14 @@ export const OrderTaskView: React.FC<any> = () => {
                 </svg>
               </div>
               <div className="text-center text-xs font-bold text-[#1b1c1c]">
-                UPI Scan &amp; Pay: ₹{grandTotal}
+                {t('task.upiScan', { amount: grandTotal })}
               </div>
               <button
                 type="button"
                 onClick={() => handleDeliver(true)}
                 className="w-full py-2 bg-[#1b5e20] text-white rounded-lg text-xs font-bold shadow-xs active:scale-95"
               >
-                Customer Paid via UPI (₹{grandTotal})
+                {t('task.paidUpi', { amount: grandTotal })}
               </button>
             </div>
           )}
@@ -406,7 +417,7 @@ export const OrderTaskView: React.FC<any> = () => {
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">task_alt</span>
-            <span>Mark as Delivered &amp; Collect ₹{grandTotal}</span>
+            <span>{t('task.markDelivered', { amount: grandTotal })}</span>
           </button>
 
           {/* Report Issue Button */}
@@ -417,7 +428,7 @@ export const OrderTaskView: React.FC<any> = () => {
               className="text-[#ba1a1a] text-xs font-bold flex items-center justify-center gap-1 mx-auto py-1 hover:underline"
             >
               <span className="material-symbols-outlined text-[16px]">report_problem</span>
-              <span>Report Delivery Issue / Door Locked</span>
+              <span>{t('task.reportIssueBtn')}</span>
             </button>
           </div>
         </div>}
@@ -432,7 +443,7 @@ export const OrderTaskView: React.FC<any> = () => {
                 <span className="material-symbols-outlined text-[#ba1a1a] text-2xl">
                   report_problem
                 </span>
-                <h3 className="text-[17px] font-bold text-[#1b1c1c]">Report Issue</h3>
+                <h3 className="text-[17px] font-bold text-[#1b1c1c]">{t('task.reportIssue')}</h3>
               </div>
               <button
                 type="button"
@@ -444,17 +455,11 @@ export const OrderTaskView: React.FC<any> = () => {
             </div>
 
             <p className="text-[12px] text-[#525e54]">
-              Select the issue experienced for order {orderNo}:
+              {t('task.selectIssue', { orderNo })}
             </p>
 
             <div className="space-y-2">
-              {[
-                'Door locked / No response',
-                'Customer refused delivery',
-                'Wrong address / unreachable phone',
-                'Quality or freshness dispute',
-                'Customer requested reschedule',
-              ].map((reason) => (
+              {ISSUE_REASONS.map((reason) => (
                 <button
                   key={reason}
                   type="button"
@@ -465,7 +470,7 @@ export const OrderTaskView: React.FC<any> = () => {
                       : 'bg-[#f6f3f2] text-[#1b1c1c] hover:bg-[#eeebe9]'
                   }`}
                 >
-                  <span>{reason}</span>
+                  <span>{t(reason)}</span>
                   {selectedIssueReason === reason && (
                     <span className="material-symbols-outlined text-[18px]">check</span>
                   )}
@@ -477,13 +482,13 @@ export const OrderTaskView: React.FC<any> = () => {
               type="button"
               onClick={() => {
                 setShowIssueModal(false);
-                setToastMessage(`Issue reported: ${selectedIssueReason}`);
+                setToastMessage(t('task.issueReported', { reason: t(selectedIssueReason) }));
                 setShowToast(true);
                 setTimeout(() => handleGoBack(), 1200);
               }}
               className="w-full py-2.5 bg-[#ba1a1a] hover:bg-[#a01616] text-white rounded-xl text-[12px] font-bold active:scale-95 shadow-xs"
             >
-              Submit to Mandi Support
+              {t('task.submitSupport')}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Order } from '../../../types';
+import { useT } from '@/i18n/LanguageContext';
 
 interface OrderCardProps {
   order: Order | any;
@@ -12,6 +13,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   onSelectOrder,
   onNavigateOrder,
 }) => {
+  const t = useT();
   // Determine avatar icon and badge styling based on order status & payment
   const isPickup = order.status === 'pickup' || order.status === 'ready_for_pickup';
   const isOnTheWay = order.status === 'on_the_way' || order.status === 'ASSIGNED';
@@ -21,14 +23,16 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     switch (order.status) {
       case 'pickup':
       case 'ready_for_pickup':
-        return 'Pickup';
+        return t('card.pickup');
       case 'on_the_way':
       case 'ASSIGNED':
-        return 'On The Way';
+        return t('card.onTheWay');
       case 'scheduled':
-        return 'Scheduled';
+        return t('card.scheduled');
       default:
-        return order.statusBadge || order.status || 'Active';
+        return order.status
+          ? t(`status.${String(order.status).toUpperCase()}`, undefined, order.statusBadge || order.status)
+          : order.statusBadge || t('card.active');
     }
   };
 
@@ -63,7 +67,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         {isCOD ? (
           <span className="bg-[#ffdad6] text-[#93000a] px-2  rounded-full font-label text-[11px] font-bold flex items-center gap-1 shrink-0 shadow-2xs">
             <span className="material-symbols-outlined text-[13px]">payments</span>
-            Collect ₹{codAmount}
+            {t('card.collect', { amount: codAmount })}
           </span>
         ) : (
           <span
@@ -74,7 +78,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">check_circle</span>
-            Prepaid
+            {t('card.prepaid')}
           </span>
         )}
       </div>
@@ -122,7 +126,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             type="button"
             className="bg-[#1b6d24] text-white px-3 py-0.5 rounded-md flex items-center  font-label text-[12px] font-bold shadow-xs hover:bg-[#144818] active:scale-95 transition-all"
           >
-            <span>Delivery</span>
+            <span>{t('card.delivery')}</span>
             <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
           </button>
         </div>
@@ -140,7 +144,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               eco
             </span>
           )}
-          <span>{order.itemsCount} Items</span>
+          <span>{t('card.items', { n: order.itemsCount })}</span>
         </span>
 
         <span
@@ -150,7 +154,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               : 'text-[#41493e]/90'
           }`}
         >
-          {isScheduled ? 'Ready for delivery' : order.itemsSummary}
+          {isScheduled ? t('card.ready') : order.itemsSummary}
         </span>
       </div>
     </div>

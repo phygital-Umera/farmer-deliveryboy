@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Order } from '../../../types';
 import { usePickupItems } from '@/lib/api and mutation/deliveryOrders/useDelivery';
+import { useT } from '@/i18n/LanguageContext';
 
 export interface ProduceItem {
   id: string;
@@ -20,6 +21,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const t = useT();
   const { mutate: pickupOrder, isPending: isPickingUp } = usePickupItems();
   // Initialize checklist items from order if available, else fallback to standard produce items
   const [items, setItems] = useState<ProduceItem[]>(() => {
@@ -79,7 +81,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#1b6d24]">
-              Delivery Receipt
+              {t('receipt.title')}
             </span>
             <h3 className="font-black text-lg text-gray-900 leading-tight">
               {order.orderNumber}
@@ -139,7 +141,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-[#e8f5e9] text-[#1b5e20] hover:bg-[#d8eed9] rounded-xl font-bold text-[12px] active:scale-95 transition-all"
                   >
                     <span className="material-symbols-outlined text-[16px]">call</span>
-                    <span>Call Customer</span>
+                    <span>{t('task.callCustomer')}</span>
                   </a>
 
                   <a
@@ -147,7 +149,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     className="flex items-center justify-center gap-1.5 py-2 px-2.5 bg-[#f2f4f2] text-[#1b1c1c] hover:bg-[#e4e7e4] rounded-xl font-bold text-[12px] active:scale-95 transition-all"
                   >
                     <span className="material-symbols-outlined text-[16px]">sms</span>
-                    <span>Quick SMS</span>
+                    <span>{t('task.sms')}</span>
                   </a>
                 </div>
               )}
@@ -163,11 +165,11 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 inventory_2
               </span>
               <span className="font-bold text-[14px] text-[#1b1c1c]">
-                Produce & Bag Checklist
+                {t('task.checklist')}
               </span>
             </div>
             <span className="text-[11px] text-[#1b6d24] font-semibold bg-[#e8f5e9] px-2 py-0.5 rounded-full">
-              {checkedCount}/{items.length} Checked
+              {t('task.checked', { done: checkedCount, total: items.length })}
             </span>
           </div>
 
@@ -210,24 +212,24 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             className="w-full mt-3 py-2.5 px-4 bg-[#1b5e20] hover:bg-[#144818] active:scale-[0.99] text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
-            <span>Pick Up ({checkedCount}/{items.length})</span>
+            <span>{t('task.pickUp', { done: checkedCount, total: items.length })}</span>
           </button>
         </div>
 
         {/* Financial & Payment Summary */}
         <div className="bg-gray-50 p-3.5 rounded-2xl border border-gray-100 text-xs space-y-2">
           <div className="flex justify-between">
-            <span className="text-gray-500">Payment Mode:</span>
+            <span className="text-gray-500">{t('receipt.paymentMode')}</span>
             <span className="font-bold text-gray-900">{order.paymentModeLabel}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Amount Collected:</span>
+            <span className="text-gray-500">{t('receipt.amountCollected')}</span>
             <span className="font-black text-[#1b6d24] text-sm">
               ₹{order.totalCashToCollect}
             </span>
           </div>
           <div className="flex justify-between border-t border-gray-200 pt-2 font-bold">
-            <span className="text-gray-700">Rider Trip Earnings:</span>
+            <span className="text-gray-700">{t('receipt.tripEarnings')}</span>
             <span className="text-[#1b5e20] text-sm">₹{order.tripEarnings}</span>
           </div>
         </div>
@@ -237,7 +239,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           onClick={onClose}
           className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black active:scale-95 transition-all"
         >
-          Close Receipt
+          {t('receipt.close')}
         </button>
       </div>
     </div>
